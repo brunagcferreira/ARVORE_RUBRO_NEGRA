@@ -2,6 +2,17 @@
 #include <stdlib.h>
 #include "rb.h"
 
+arvore no_null;
+
+void inicializar(arvore *raiz){
+    *raiz = NULL;
+    no_null = (arvore)malloc(sizeof(no));
+    no_null->cor = DUPLO_PRETO;
+    no_null->valor = 0;
+    no_null->esq = NULL;
+    no_null->dir = NULL;
+}
+
 void adicionar (int valor, arvore *raiz){
     //1. inicializar ponteiros
     arvore posicao, pai, novo;
@@ -297,5 +308,93 @@ arvore avo(arvore elemento){
     return elemento->pai->pai;
 }
 
+//precisa ser a altura de pretos??
+//arrumar para o caso em q a arvore esta vazia
+int altura(arvore raiz){
+    int altura = 0;
+    arvore aux = raiz;
+    while (raiz != NULL){
+        if(raiz->cor == PRETO){
+            altura+=1;
+        }
+        aux = aux->esq;
+    }
+    return altura+1;
+}
+
+//int maior(int a, int b);
+
+int maior_elemento(arvore raiz){
+    if(raiz == NULL){
+        return -1;
+    }
+    if(raiz->dir == NULL){
+        return raiz->valor;
+    }
+    else{
+        return maior_elemento(raiz->dir);
+    }
+}
+
+
+int menor_elemento(arvore raiz){
+    if(raiz == NULL){
+        return -1;
+    }
+    if(raiz->esq == NULL){
+        return raiz->valor;
+    }
+    else{
+        return menor_elemento(raiz->esq);
+    }
+}
+
+void imprimir_elemento(arvore raiz) {
+	switch(raiz->cor){
+		case PRETO:
+			printf("\x1b[30m[%d]\x1b[0m", raiz->valor);
+			break;
+		case VERMELHO:
+			printf("\x1b[31m[%d]\x1b[0m", raiz->valor);
+			break;
+		case DUPLO_PRETO:
+			printf("\x1b[32m[%d]\x1b[0m", raiz->valor);
+			break;
+	}
+}
+
+void imprimir(arvore raiz) {
+	printf("(");
+	if(raiz != NULL) {
+		imprimir_elemento(raiz);
+		imprimir(raiz->esq);
+		imprimir(raiz->dir);
+	}
+	printf(")");
+}
+
+void pre_order(arvore raiz) {
+	if(raiz != NULL) {
+		imprimir_elemento(raiz);
+		pre_order(raiz->esq);
+		pre_order(raiz->dir);
+	}
+}
+
+void pos_order(arvore raiz) {
+	if(raiz != NULL) {
+		pos_order(raiz->esq);
+		pos_order(raiz->dir);
+		imprimir_elemento(raiz);
+	}
+}
+
+void in_order(arvore raiz) {
+	if(raiz != NULL) {
+		in_order(raiz->esq);
+		imprimir_elemento(raiz);
+		in_order(raiz->dir);
+	}
+}
 
 

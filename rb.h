@@ -18,7 +18,7 @@ void adicionar (int valor, arvore *raiz);
 void remover (int valor, arvore *raiz);
 
 int altura(arvore raiz);
-int maior(int a, int b);
+//int maior(int a, int b);
 int maior_elemento(arvore raiz);
 int menor_elemento(arvore raiz);
 void pre_order(arvore raiz);
@@ -46,4 +46,4 @@ arvore tio(arvore elemento);
 arvore avo(arvore elemento);
 void retira_duplo_preto(arvore *raiz, arvore elemento);
 
-#endif RB_H;
+#endif
