@@ -6,11 +6,16 @@ arvore no_null;
 
 void inicializar(arvore *raiz){
     *raiz = NULL;
-    no_null = (arvore)malloc(sizeof(no));
+    no_null = (arvore)malloc(sizeof(struct no));
+    if (no_null == NULL) {
+        printf("Falha ao alocar memória para no_null\n");
+        exit(EXIT_FAILURE);
+    }
     no_null->cor = DUPLO_PRETO;
     no_null->valor = 0;
     no_null->esq = NULL;
     no_null->dir = NULL;
+    no_null->pai = NULL;
 }
 
 void adicionar (int valor, arvore *raiz){
@@ -31,18 +36,19 @@ void adicionar (int valor, arvore *raiz){
     }
 
     //3. inicializar o novo elemennto
-    novo = (arvore)malloc(sizeof(no));
+    novo = (arvore)malloc(sizeof(struct no));
     novo->cor = VERMELHO;
     novo->dir = NULL;
     novo->esq = NULL;
     novo->pai = pai;
+    novo->valor = valor;
 
     //4. att ponteiro do pai, ou da raíz
-    if (eh_raiz){
+    if (eh_raiz(novo)){
         *raiz = novo;
     }else{
 
-        if (eh_filho_esquerdo){
+        if (valor <= pai->valor){
             pai->esq = novo;
         }else{
             pai->dir = novo;
@@ -59,10 +65,10 @@ void ajustar(arvore *raiz, arvore elemento){
     while(cor(elemento) == VERMELHO && cor(pai(elemento)) == VERMELHO){
 
         //caso 1: nó, pai e tio são vermelhos. trazer para baixo a cor  preta do avô
-        if(cor(tio(elemento)) ==  VERMELHO){
-            pai(elemento)->cor == PRETO;
-            tio(elemento)->cor == PRETO;
-            avo(elemento)->cor == VERMELHO;
+        if(cor(tio(elemento)) == VERMELHO){
+            pai(elemento)->cor = PRETO;
+            tio(elemento)->cor = PRETO;
+            avo(elemento)->cor = VERMELHO;
 
             elemento = avo(elemento);
             continue;
@@ -96,7 +102,7 @@ void ajustar(arvore *raiz, arvore elemento){
         //ROTAÇÃO DUPLA DIREITA
         if(!eh_filho_esquerdo(elemento) && eh_filho_esquerdo(pai(elemento))){
             
-            rotacao_simples_direita(raiz, avo(elemento));
+            rotacao_dupla_direita(raiz, avo(elemento));
             elemento->cor = PRETO;
             elemento->dir->cor = VERMELHO;
             elemento->esq->cor = VERMELHO;
@@ -108,7 +114,7 @@ void ajustar(arvore *raiz, arvore elemento){
         //ROTAÇÃO DUPLA ESQUERDA
         if(eh_filho_esquerdo(elemento) && !eh_filho_esquerdo(pai(elemento))){
 
-            rotacao_simples_esquerda(raiz, avo(elemento));
+            rotacao_dupla_esquerda(raiz, avo(elemento));
 
             elemento->cor = PRETO;
             elemento->dir->cor = VERMELHO;
@@ -117,13 +123,10 @@ void ajustar(arvore *raiz, arvore elemento){
             continue;
 
         }
-
-        (*raiz)->cor = PRETO;
-
     }
-    
+    (*raiz)->cor = PRETO;
 }
-
+//correto
 void rotacao_simples_direita(arvore *raiz, arvore pivo){
     //inicializar
     arvore p, u, t1;
@@ -147,7 +150,7 @@ void rotacao_simples_direita(arvore *raiz, arvore pivo){
 
     //Se não existir árvore acima de u, u passa a ser a raiz da árvore
     if (eh_raiz(u)){
-        (*raiz) = u;
+        *raiz = u;
     }
 
     //Caso contrário (se existir) é preciso ligar o restante da árvore a esta sub-árvore, resultante 
@@ -160,6 +163,7 @@ void rotacao_simples_direita(arvore *raiz, arvore pivo){
     }
 }
 
+//certo
 void rotacao_simples_esquerda(arvore *raiz, arvore pivo){
     //inicializar ponteiros
     arvore p, u, t1;
@@ -286,7 +290,7 @@ int eh_raiz(arvore elemento){
 }
 
 int eh_filho_esquerdo(arvore elemento){
-    return (elemento->pai != NULL && elemento == elemento->pai->esq);
+    return (elemento->pai != NULL && elemento == pai(elemento)->esq);
 }
 
 arvore irmao(arvore elemento){
@@ -297,10 +301,14 @@ arvore irmao(arvore elemento){
 }
 
 arvore pai(arvore elemento){
+    
     return elemento->pai;
 }
 
 arvore tio(arvore elemento){
+    if(elemento == NULL){
+        return NULL;
+    }
     return (irmao(pai(elemento)));
 }
 
@@ -311,15 +319,17 @@ arvore avo(arvore elemento){
 //precisa ser a altura de pretos??
 //arrumar para o caso em q a arvore esta vazia
 int altura(arvore raiz){
+    if (raiz == NULL) return 0;
+    
     int altura = 0;
     arvore aux = raiz;
-    while (raiz != NULL){
-        if(raiz->cor == PRETO){
-            altura+=1;
+    while (aux != NULL){
+        if(aux->cor == PRETO){
+            altura++;
         }
         aux = aux->esq;
     }
-    return altura+1;
+    return altura;
 }
 
 //int maior(int a, int b);

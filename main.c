@@ -21,10 +21,8 @@ int main() {
 						break;
                 //2. add elemento
 				case 2:
-						printf("digite o valor que deseja add: ");
                         scanf("%d", &valor);
 						adicionar(valor, &a);
-                        printf("valor add");
 						break;
                 //3. maior elemento
 				case 3:
