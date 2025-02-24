@@ -407,4 +407,140 @@ void in_order(arvore raiz) {
 	}
 }
 
+void remover (int valor, arvore *raiz){
+    arvore posicao = *raiz;
+
+    while (posicao != NULL)
+    {
+        if(posicao->valor == valor){
+            //2 filhos
+            if(posicao->esq != NULL && posicao->dir != NULL){
+                
+                posicao->valor = maior_elemento(posicao->esq);
+                remover(posicao->valor, &(posicao->esq));
+                break;
+            }
+            //1 filho direito
+            if(posicao->dir != NULL && posicao->esq == NULL){
+
+                posicao->dir->cor = PRETO;
+                posicao->dir->pai = pai(posicao);
+
+                if(eh_raiz(posicao)){
+                    *raiz = posicao->dir;
+                }else{
+                    if(eh_filho_esquerdo(posicao)){
+                        pai(posicao)->esq = posicao->dir;
+                    }else{
+                        pai(posicao)->dir = posicao->dir;
+                    }
+                }
+                free(posicao);
+                break;
+            }
+            //1 filho esquerdo
+            if(posicao->dir == NULL && posicao->esq != NULL){
+                
+                posicao->esq->cor = PRETO;
+                posicao->esq->pai = pai(posicao);
+
+                if(eh_raiz(posicao)){
+                    *raiz = posicao->esq;
+                }else{
+                    if(eh_filho_esquerdo(posicao)){
+                        pai(posicao)->esq = posicao->esq;
+                    }else{
+                        pai(posicao)->dir = posicao->esq;
+                    }
+                }
+
+                free(posicao);
+                break;
+            }
+
+            //0 filhos
+            if(posicao->esq == NULL && posicao->dir == NULL){
+                //se o elemento for a raiz
+                if(eh_raiz(posicao)){
+                    *raiz = NULL;
+                    free(posicao);
+                    break;
+                }
+                //se o elemento for vermelho, apenas remove e att o ponteiro do pai do elemento removido
+                if(cor(posicao) == VERMELHO){
+                    if(eh_filho_esquerdo(posicao)){
+                        pai(posicao)->esq = NULL;
+                    }else{
+                        pai(posicao)->dir = NULL;
+                    }
+                    
+                    free(posicao);
+                    break;
+                }
+
+                //Se o elemento for preto, substitui pelo duplo preto e depois ajusta a arvore
+                no_null->cor = DUPLO_PRETO;
+                no_null->pai = pai(posicao);
+
+                if(eh_filho_esquerdo(posicao)){
+                    pai(posicao)->esq = no_null;
+                }else{
+                    pai(posicao)->dir = no_null;
+                }
+
+                free(posicao);
+                reajustar(raiz, no_null);
+                break;
+            }
+        }
+        if(posicao->valor >= valor){
+            posicao = posicao->esq;
+        }else{
+            posicao = posicao->dir;
+        }
+    }
+
+}
+
+void reajustar(arvore *raiz, arvore elemento){
+    //caso 1
+    if(eh_raiz(elemento)){
+        elemento->cor = PRETO;
+        if(elemento = no_null){
+            *raiz = NULL;
+        }
+        return;
+    }
+    //caso 2.
+    if( cor(pai(elemento)) == PRETO &&
+        cor(irmao(elemento)) == VERMELHO &&
+        cor(irmao(elemento)->dir) == PRETO &&
+        cor(irmao(elemento)->esq) == PRETO){
+        
+        if(eh_filho_esquerdo(elemento)){
+            rotacao_simples_esquerda(raiz, pai(elemento));
+        }else{
+            rotacao_simples_direita(raiz, pai(elemento));
+        }
+
+        pai(elemento)->cor = VERMELHO;
+        avo(elemento)->cor = PRETO;
+
+        reajustar(raiz, elemento);
+        return;
+    }
+
+    //caso 3
+
+    //caso 4
+
+    //caso 5.a.
+
+    //caso 5.b.
+
+    //caso 6.a.
+
+    //caso 6.b.
+}
+
 
